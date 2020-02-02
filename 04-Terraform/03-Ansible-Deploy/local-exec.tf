@@ -40,6 +40,7 @@ provisioner "local-exec" {
         > jenkins-ci.ini;
         echo "[jenkins-ci]"| tee -a jenkins-ci.ini;
         echo "${aws_instance.backend.public_ip}" | tee -a jenkins-ci.ini;
+        sleep 60;
         ansible-playbook  --key=${var.pvt_key} -i jenkins-ci.ini ./ansible/04-Tomcat/web-playbook.yaml -u ec2-user -v
     EOT
 }
