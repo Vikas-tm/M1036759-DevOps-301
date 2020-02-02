@@ -5,16 +5,16 @@
   become_method: sudo
   tasks:
   - name: Install Apache2 Packages 
-    apt:  name=apache2 state=present
+    yum:  name=httpd state=present
 
   - name: Start Apache Service
-    service: name=apache2 state=started enabled=true
+    service: name=httpd state=started enabled=true
 
   - name: Create Dir to Downlaod Tomcat. 
     file: path=/opt/SP/apps/tomcat state=directory
 
   - name: Install Java 1.8 
-    apt: name=default-jdk state=present
+    yum: name=java-1.8.0-openjdk state=present
 
 
   - name: Download Tomcat

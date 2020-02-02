@@ -11,7 +11,7 @@ provider "aws" {
 }
 
 resource "aws_instance" "backend" {
-  ami                    = "ami-0927ed83617754711"
+  ami                    = "ami-0217a85e28e625474"
   instance_type          = "t2.micro"
   key_name               = "${var.key_name}"
   vpc_security_group_ids = ["${var.sg-id}"]
@@ -20,7 +20,7 @@ resource "aws_instance" "backend" {
 
 resource "null_resource" "remote-exec-1" {
     connection {
-    user        = "ubuntu"
+    user        = "ec2-user"
     type        = "ssh"
     private_key = "${file(var.pvt_key)}"
     host        = "${aws_instance.backend.public_ip}"
@@ -28,8 +28,7 @@ resource "null_resource" "remote-exec-1" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get update",
-      "sudo apt-get install python sshpass -y",
+      "yum update -y",
     ]
   }
 }
@@ -41,8 +40,7 @@ provisioner "local-exec" {
         > jenkins-ci.ini;
         echo "[jenkins-ci]"| tee -a jenkins-ci.ini;
         echo "${aws_instance.backend.public_ip}" | tee -a jenkins-ci.ini;
-        ansible-playbook  --key=${var.pvt_key} -i jenkins-ci.ini ./ansible/04-Tomcat/web-playbook.yaml -u ubuntu -v
-        sleep 300;
+        ansible-playbook  --key=${var.pvt_key} -i jenkins-ci.ini ./ansible/04-Tomcat/web-playbook.yaml -u ec2-user -v
     EOT
 }
 }
